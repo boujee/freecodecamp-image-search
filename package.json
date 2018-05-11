@@ -3,17 +3,19 @@
   "version": "1.0.0",
   "main": "lib/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "start": "nodemon lib/server.js --exec babel-node"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-jest": "^22.4.3",
-    "babel-preset-env": "^1.7.0",
-    "jest": "^22.4.3",
-    "nodemon": "^1.17.4",
-    "supertest": "^3.0.0"
+    "babel-cli": "6.*",
+    "babel-jest": "22.*",
+    "babel-preset-env": "1.*",
+    "jest": "22.*",
+    "nodemon": "1.*",
+    "supertest": "3.*"
   },
   "dependencies": {
-    "express": "^4.16.3"
+    "express": "4.*",
+    "node-fetch": "2.*"
   }
 }
