@@ -4,7 +4,9 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "jest",
-    "start": "nodemon lib/server.js --exec babel-node"
+    "start": "nodemon lib/server.js --exec babel-node",
+    "build": "babel lib -d dist",
+    "serve": "node dist/server.js"
   },
   "devDependencies": {
     "babel-cli": "6.*",
@@ -17,6 +19,7 @@
   "dependencies": {
     "express": "4.*",
     "markdown-it": "8.*",
+    "mongodb": "^3.1.0-beta4",
     "node-fetch": "2.*"
   }
 }

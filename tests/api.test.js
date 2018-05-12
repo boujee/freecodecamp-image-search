@@ -1,17 +1,24 @@
 'use strict';
 
 import request from 'supertest';
-import {api, db, bing} from 'freecodecamp-image-search';
+import {boot} from 'freecodecamp-image-search';
 
-if (!process.env.hasOwnProperty('API_KEY')) {
-  throw new Error('API_KEY environment variable must be set');
-}
+let app = null;
 
-const {API_KEY} = process.env;
-const mkAPI = () => api({db: new db(), bing: new bing(API_KEY)});
+beforeAll(async () => {
+  app = await boot(process.env);
+});
+
+afterAll(() => {
+  app.close();
+});
+
 const tap = f => a => { f(a); return a; };
-const getBody = (uri, app = mkAPI()) => request(app).get(uri).expect(200).then(({body}) => body);
-const getJson = (uri, app = mkAPI()) => getBody(uri, app).then(tap(body => expect(body).not.toBeInstanceOf(String)));
+
+const getBody = uri => request(app).get(uri).expect(200).then(({body}) => body);
+
+const getJson = uri => getBody(uri).then(tap(body => expect(body).not.toBeInstanceOf(String)));
+
 const toHaveProperties = (...arr) => e => arr.forEach(p => expect(e).toHaveProperty(p));
 
 describe('api', () => {
@@ -27,16 +34,15 @@ describe('api', () => {
       .then(([a, b]) => [a.slice(2).concat(b.slice(-2)), b])
       .then(([a, b]) => expect(a).toEqual(b))
   );
-  test('I can get a list of the most recently submitted search strings', () => {
-    const app = mkAPI();
-    return getJson('/api/imagesearch/lol cats b', app)
-      .then(() => getJson('/api/imagesearch/lol cats a', app))
-      .then(() => getJson('/api/latest/imagesearch', app))
+  test('I can get a list of the most recently submitted search strings', () =>
+    getJson('/api/imagesearch/lol cats b')
+      .then(() => getJson('/api/imagesearch/lol cats a'))
+      .then(() => getJson('/api/latest/imagesearch'))
       .then(tap(body => expect(body).toBeInstanceOf(Array)))
       .then(tap(body => expect(body.length).toBeGreaterThanOrEqual(2)))
       .then(tap(body => body.forEach(toHaveProperties('term', 'when'))))
       .then(body => body.map(r => r.term))
       .then(body => body.slice(0, 2))
       .then(tap(body => expect(body).toEqual(['lol cats a', 'lol cats b'])))
-  });
+  );
 });
