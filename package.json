@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "express": "4.*",
+    "markdown-it": "8.*",
     "node-fetch": "2.*"
   }
 }
